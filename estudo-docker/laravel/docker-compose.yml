@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+    laravel:
+        build:
+            context: .
+            dockerfile: Dockerfile.prod
+        volumes:
+            - ./:/var/www
+        networks:
+            - app-network
+
+    nginx:
+        build: 
+            context: ./nginx
+        ports:
+            - "8080:80"
+        volumes:
+            - ./:/var/www
+        networks:
+            - app-network
+        depends_on:
+            - laravel
+
+networks:
+    app-network:
+        driver: bridge 
