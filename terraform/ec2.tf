@@ -6,24 +6,22 @@ resource "aws_security_group" "wordpress-sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.allowed_cidr_blocks
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.allowed_cidr_blocks
   }
 
-  tags = {
-    Name = "wordpress-sg"
-  }
+  tags = var.sg_tags
 }
 
 resource "aws_instance" "wordpress" {
-  ami           = "ami-0c7217cdde317cfec"
-  instance_type = "t2.micro"
+  ami           = var.ami_id
+  instance_type = var.instance_type
   subnet_id     = aws_subnet.subnets[0].id
   vpc_security_group_ids = [aws_security_group.wordpress-sg.id]
 
@@ -89,9 +87,7 @@ resource "aws_instance" "wordpress" {
               systemctl restart apache2
               EOF
 
-  tags = {
-    Name = "${var.prefix}-wordpress"
-  }
+ tags = var.tags
 }
 
 output "wordpress_public_ip" {

@@ -1,8 +1,7 @@
 resource "aws_vpc" "new-vpc" {
   cidr_block = "10.0.0.0/16"
-  tags = {
-    name = "fullcycle-vpc"
-  }
+
+  tags = var.vpc_tags
 }
 /* evaluate availability zone
 data "aws_availability_zones" "available" {}
@@ -25,20 +24,16 @@ resource "aws_subnet" "subnets" {
 
 resource "aws_internet_gateway" "new-igw" {
   vpc_id = aws_vpc.new-vpc.id
-  tags = {
-    name = "${var.prefix}-igw"
-  }
+  tags = var.igw_tags
 }
 
 resource "aws_route_table" "new-rtb" {
   vpc_id = aws_vpc.new-vpc.id
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block = var.rtb_cidr_block
     gateway_id = aws_internet_gateway.new-igw.id
   }
-  tags = {
-    name = "${var.prefix}-rtb"
-  }
+  tags = var.rtb_tags
 }
 
 resource "aws_route_table_association" "new-rtb-association" {
